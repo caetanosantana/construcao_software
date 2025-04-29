@@ -10,7 +10,7 @@ export interface PageInfoWithDescription extends PageInfo {
   description: string;
 }
 
-export const CommonPagesWithDescription: PageInfoWithDescription[] = [
+export const TeacherPagesWithDescription: PageInfoWithDescription[] = [
   {
     title: "Buscar Questões",
     icon: Search,

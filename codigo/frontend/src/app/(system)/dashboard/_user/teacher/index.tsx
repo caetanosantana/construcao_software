@@ -10,12 +10,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CommonPagesWithDescription } from "@/lib/pages";
+import { TeacherPagesWithDescription } from "@/lib/pages";
 import { House } from "lucide-react";
 
-const cards = CommonPagesWithDescription;
+const cards = TeacherPagesWithDescription;
 
-export default function TeacherInitialPage() {
+export function TeacherDashboard() {
   return (
     <div className="flex min-h-screen flex-col space-y-8 p-8">
       <Breadcrumb className="flex items-center space-x-1 text-sm leading-none text-muted-foreground">
