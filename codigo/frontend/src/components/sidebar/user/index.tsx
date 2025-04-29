@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Home, LogOut } from "lucide-react";
 import Link from "next/link";
 import { TeacherInfo } from "./info";
-import { CommonPagesWithDescription, PageInfo } from "@/lib/pages";
+import { TeacherPagesWithDescription, PageInfo } from "@/lib/pages";
 
 const items: PageInfo[] = [
   {
@@ -10,7 +10,7 @@ const items: PageInfo[] = [
     icon: Home,
     href: "/dashboard",
   },
-  ...CommonPagesWithDescription
+  ...TeacherPagesWithDescription
 ] satisfies PageInfo[];
 
 export function TeacherSidebar() {
