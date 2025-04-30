@@ -7,7 +7,6 @@ const user = {
 
 export const getUserInfo = () => {
   const {userType, ...info} = user;
-
   return info;
 }
 

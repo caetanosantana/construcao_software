@@ -12,7 +12,7 @@ export interface PasswordInputProps extends InputHTMLAttributes<HTMLInputElement
 }
 
 const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
-  ({ className, containerClassName, ...props }, ref) => {
+  function PasswordInput({ className, containerClassName, ...props }, ref) {
     const [showPassword, setShowPassword] = useState(false)
 
     return (

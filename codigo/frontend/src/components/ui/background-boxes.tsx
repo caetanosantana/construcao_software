@@ -8,7 +8,7 @@ interface BoxesCoreProps extends React.HTMLProps<HTMLDivElement> {
    squaresClassName?: string;
 }
 
-export const BoxesCore = ({ className, squaresClassName, ...rest }: BoxesCoreProps) => {
+export const BoxesCore = ({ className, ...rest }: BoxesCoreProps) => {
   const rows = new Array(150).fill(1);
   const cols = new Array(100).fill(1);
   return (
