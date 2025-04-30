@@ -12,7 +12,7 @@ export default function SystemLayout({
   const sidebar = userType === "teacher" ? <TeacherSidebar /> : null;
 
   return (
-    <div className="flex flex-row w-screen min-h-screen items-center justify-center">
+    <div className="flex flex-row w-screen h-screen items-center justify-center">
       <section className="hidden lg:flex w-1/5 h-screen border-r-[1.2px] border-accent">
         {sidebar}
       </section>

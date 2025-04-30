@@ -37,7 +37,7 @@ export function TeacherSidebar() {
       </div>
 
       <div className="border-t-[1.2px] border-accent p-4">
-        <Button className="w-full justify-start cursor-pointer" variant="ghost">
+        <Button className="w-full justify-start" variant="ghost">
           <LogOut />
           Sair
         </Button>
