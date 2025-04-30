@@ -66,9 +66,9 @@ export const QuestionCard = ({ question }: Props) => {
 
   return (
     <Card className="w-full border-t-blue-400 border-t-4">
-      <CardHeader className={cn("gap-4", !question.obr && "grid-rows-none ")}>
-        <CardTitle className="flex justify-between  items-center">
-          <div className="flex gap-2 h-7">
+      <CardHeader className={cn("gap-4 p-0 flex flex-col", !question.obr && "grid-rows-none ")}>
+        <CardTitle className="flex justify-between items-center w-full px-2 md:px-3 lg:px-6">
+          <div className="flex flex-wrap gap-2">
             <Badge variant="outline" className="rounded-full text-sm">
               <strong>#{question.number}</strong>
             </Badge>
@@ -105,7 +105,7 @@ export const QuestionCard = ({ question }: Props) => {
         </CardTitle>
 
         {question.obr && (
-          <CardDescription className="bg-orange-100 py-1 -mx-6 px-6 gap-2 flex items-center">
+          <CardDescription className="bg-orange-100 py-1 px-2 md:px-3 lg:px-6 gap-2 flex flex-wrap items-center w-full">
             <Badge
               variant="outline"
               className="rounded-full font-bold bg-orange-400 text-white border-orange-200"
@@ -121,7 +121,7 @@ export const QuestionCard = ({ question }: Props) => {
         )}
       </CardHeader>
 
-      <CardContent className="text-sm grid gap-2">
+      <CardContent className="text-sm grid gap-2 px-2 md:px-3 lg:px-6 text-justify">
         <p>{question.asking}</p>
 
         <div className="flex flex-col gap-6">

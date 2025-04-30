@@ -24,6 +24,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { AnimatePresence } from "motion/react";
+import { useMediaQuery } from "usehooks-ts";
 
 const formSchema = z.object({
   education: z.enum(["all", "ef", "em"]),
@@ -39,6 +40,7 @@ const formSchema = z.object({
 // TODO: criar lista de anos, níveis, etapas da OBR com base no banco de dados
 // TODO: criar lista de habilidades da ABNCC, provavelmente melhor usar o DB?
 export const Filters = () => {
+  const isMobile = useMediaQuery("(max-width: 425px)");
   const [pressed, setPressed] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -84,7 +86,7 @@ export const Filters = () => {
           <motion.div
             // layout
             initial={{ opacity: 0, scale: 0, height: 0, padding: 0 }}
-            animate={{ opacity: 1, scale: 1, height: "100%", padding: 40 }}
+            animate={{ opacity: 1, scale: 1, height: "100%", padding: isMobile ? 20 : 40 }}
             exit={{ opacity: 0, scale: 0, height: 0, padding: 0, }}
             transition={{ duration: 0.4, ease: "anticipate", type: "tween" }}
             dragElastic={0.1}
@@ -93,7 +95,7 @@ export const Filters = () => {
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="grid grid-cols-3 gap-4 w-full"
+                className="grid md:grid-cols-2 xl:grid-cols-3 gap-4 w-full"
               >
                 <FormField
                   name="education"
