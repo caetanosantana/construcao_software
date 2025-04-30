@@ -1,4 +1,3 @@
-import { TeacherSidebar } from "@/components/sidebar/user";
 import { redirect } from "next/navigation";
 import { TeacherDashboard } from "./_user/teacher";
 

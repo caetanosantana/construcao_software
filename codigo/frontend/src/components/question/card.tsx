@@ -32,7 +32,7 @@ const getQuestionBadgeStyle = (badge: QuestionBadge) => {
 // FIXME: adicionar tipos diferentes de alternativas, como imagem, etc...
 const Alternative = ({
   answer,
-  type,
+  // type,
   id,
   selected,
   value,
