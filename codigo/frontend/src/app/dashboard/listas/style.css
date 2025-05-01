@@ -1,0 +1,12 @@
+/**TENTATIVA PARA ESTILIZAR CAIXA.TSX. PODE EXCLUIR SE PRECISAR*/
+.matematica, .historia, .OBR{
+    @apply border-2 bg-blue-500 w-1/3;
+}
+
+.historia{
+    @apply bg-amber-300;
+}
+
+.OBR{
+    @apply bg-green-500;
+}

@@ -26,7 +26,11 @@ export default function DashboardLayout({
 
       <main className="flex flex-col w-full lg:w-4/5 h-screen">
         {dashboard}
+        {children}
       </main>
+
+
     </div>
+    
   );
 }

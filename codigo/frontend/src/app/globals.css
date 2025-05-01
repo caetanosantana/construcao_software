@@ -76,6 +76,9 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /*Variaveis relacionadas a box shadow*/
+  --offy-box:-4px;
 }
 
 .dark {
@@ -119,4 +122,26 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+
+
+/**Estilização das sombras do card**/
+.matematica{
+  @apply  w-full mt-5;
+  box-shadow:0px var(--offy-box) #3b82f6;
+  background-color:#eff6ff;
+
+}
+
+.historia{
+  @apply  w-full mt-5;
+  box-shadow:0px var(--offy-box) #f97316;
+  background-color:#fff7ed;
+}
+
+.obr{
+  @apply  w-full mt-5;
+  box-shadow:0px var(--offy-box) #22c55e;
+  background-color:#f0fdf4;
 }
