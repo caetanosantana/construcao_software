@@ -79,6 +79,7 @@
 
   /*Variaveis relacionadas a box shadow*/
   --offy-box:-4px;
+  --offx-box:0px;
 }
 
 .dark {
@@ -127,21 +128,32 @@
 
 
 /**Estilização das sombras do card**/
-.matematica{
-  @apply  w-full mt-5;
-  box-shadow:0px var(--offy-box) #3b82f6;
-  background-color:#eff6ff;
 
-}
-//
-.historia{
-  @apply  w-full mt-5;
-  box-shadow:0px var(--offy-box) #f97316;
-  background-color:#fff7ed;
-}
-
-.obr{
-  @apply  w-full mt-5;
-  box-shadow:0px var(--offy-box) #22c55e;
-  background-color:#f0fdf4;
+/**
+OBS: a partir de 771px e 777px os botões não ficam alinhados
+OBS: a partir de 1300px ate 1462 os botões não ficam alinhados
+TO DO
+**/
+@layer utilities {
+  .matematica{
+    @apply  w-full max-w-96  sm:min-w-full sm:text-center md:text-left  
+    mt-5;
+    @apply max-sm:min-w-full max-sm:text-center; 
+    box-shadow:var(--offx-box) var(--offy-box) #3b82f6;
+    background-color:#eff6ff;
+  }
+  
+  .historia{
+    @apply  w-full max-w-96 sm:min-w-full sm:text-center md:text-left  mt-5;
+    @apply max-sm:min-w-full max-sm:text-center; 
+    box-shadow:var(--offx-box) var(--offy-box) #f97316;
+    background-color:#fff7ed;
+  }
+  
+  .obr{
+    @apply  w-full max-w-96 sm:min-w-full sm:text-center md:text-left  mt-5;
+    @apply max-sm:min-w-full max-sm:text-center; 
+    box-shadow:var(--offx-box) var(--offy-box) #22c55e;
+    background-color:#f0fdf4;
+  }
 }

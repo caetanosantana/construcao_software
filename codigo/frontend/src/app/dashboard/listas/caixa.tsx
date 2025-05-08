@@ -6,19 +6,20 @@ import {
     CardTitle,
   } from "@/components/ui/card"
 
-import { Button } from "@/components/ui/button"
-import Image from "next/image"
+import { Button } from "@/components/ui/button";
+import {Trash2, FileUp, FolderOpen } from 'lucide-react';
+
 interface propsCaixa {
     materia: string,
     topico?: string,
     descricao: string,
     hifen?: string,
-    corTitulo:string;
+    corTitulo:string
 }
 
 export default function Caixa(props: propsCaixa){
     const materia = props.materia.toLowerCase(); 
-
+    
     return (
         <div>
             <Card className={materia}>
@@ -29,38 +30,22 @@ export default function Caixa(props: propsCaixa){
 
                 <CardContent>
                     <Button className="w-fit bg-white text-black rounded-sm hover:bg-gray-400">
-                        <Image
-                            src="/folder.svg"
-                            alt="folder"            
-                            width = {15}
-                            height={15}
-                        />
+                    <FolderOpen />
                         abrir
                     </Button>
 
-                    <Button className="w-fit bg-white text-black m-1 rounded-sm hover:bg-gray-400">
-                        <Image
-                            src="/export.svg"
-                            alt="export"            
-                            width = {15}
-                            height={15}
-                        />
+                    <Button className="w-fit bg-white text-black m-3 rounded-sm hover:bg-gray-400">
+                        <FileUp/>
                         exportar
                     </Button>
 
                     <Button className="w-fit bg-red-500 text-black rounded-sm hover:bg-gray-400">
-                        <Image
-                            src="/delete.svg"
-                            alt="delete"            
-                            width = {15}
-                            height={15}
-                        />
+                        <Trash2 />
                         apagar
                         </Button>
                 </CardContent>
 
             </Card>
-
         </div>
     )
 }

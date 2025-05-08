@@ -4,10 +4,11 @@ import { Select,
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select"
-import Image from "next/image";
+
 import {Button} from "@/components/ui/button";
 import { Input } from "@/components/ui/input" ;
 import Caixa from "@/app/dashboard/listas/caixa"
+import {CirclePlus} from 'lucide-react'
 
 const questoes = [
     {
@@ -41,7 +42,7 @@ const questoes = [
 ]
 export default function listas(){
 return (
-    <div className="flex flex-col w-11/12  mx-auto mt-8">
+    <div className="flex flex-col w-11/12  mx-auto mt-8 max-w-[1157px]">
         <h1 className="text-center">Minhas listas</h1>
             <div className="flex flex-row justify-between mt-5 w-ful">
                 <Input className="w-1/3" placeholder='Buscar listas pelo nome'/>
@@ -58,7 +59,7 @@ return (
                 </Select>
             </div>
 
-            <div className="grid grid-cols-3 gap-x-3">
+            <div className="grid gap-x-3 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 ">
                     {questoes.map((questoes) =>
                         <Caixa
                         key={questoes.id}
@@ -72,12 +73,10 @@ return (
 
             </div>
                 <Button className="w-1/3 bg-white text-black mt-12 border-1 border-b-cyan-100 p-3">
-                    <Image
-                    src="/adicionar.svg"
-                    alt="plus"            
-                    width = {18}
-                    height={18}
-                    />
+                <CirclePlus 
+                    width={'18px'}
+                    height={'18px'}
+                />
                     Criar nova lista
                 </Button>
 
