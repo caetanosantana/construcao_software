@@ -1,0 +1,4 @@
+Para visualização do projeto no Figma, acesse o seguinte link:
+https://www.figma.com/design/vxefGh8Vw4hKjQCFpBOOP1/OBRQUIZ?node-id=0-1&p=f&t=EvttXQz7a2IGxfBx-0
+
+As telas pós validação encontram-se na página "TELAS FINAIS".
