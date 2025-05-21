@@ -1,0 +1,4 @@
+export const lorem = {
+  placeholder: "Lorem ipsum dolor sit amet. Cum culpa assumenda aut magnam quaerat ut quisquam fuga? Eum harum repellat aut natus pariatur ab quod pariatur et nostrum minus. Et dolorum aspernatur ut culpa quas et perspiciatis molestiae aut enim neque et nihil fuga. Ea saepe quidem id dicta neque eum ipsam labore sed facere officia ut alias nihil ut voluptas blanditiis.",
+  question: "Lorem ipsum dolor sit amet. Et quidem unde nam fuga harum sed labore voluptas rem repudiandae fugit vel repellat accusantium ea velit dolor. Quo dignissimos voluptas At minus distinctio rem consectetur eaque non excepturi tempore et provident voluptas qui mollitia commodi.",
+}

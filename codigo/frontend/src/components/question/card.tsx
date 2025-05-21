@@ -122,7 +122,7 @@ export const QuestionCard = ({ question }: Props) => {
       </CardHeader>
 
       <CardContent className="text-sm grid gap-2 px-2 md:px-3 lg:px-6 text-justify">
-        <p>{question.asking}</p>
+        <p className="tracking-tight">{question.question}</p>
 
         <div className="flex flex-col gap-6">
           <span>

@@ -29,6 +29,8 @@ const FormFieldContext = React.createContext<FormFieldContextValue>(
   {} as FormFieldContextValue
 )
 
+FormFieldContext.displayName = "FormFieldContext";
+
 const FormField = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -72,6 +74,7 @@ type FormItemContextValue = {
 const FormItemContext = React.createContext<FormItemContextValue>(
   {} as FormItemContextValue
 )
+FormItemContext.displayName = "FormItemContext"
 
 function FormItem({ className, ...props }: React.ComponentProps<"div">) {
   const id = React.useId()

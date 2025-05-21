@@ -19,7 +19,7 @@ export const Page = ({ children, items, title, className }: Props) => {
   );
 
   return (
-    <div className={cn("flex min-h-screen flex-col space-y-8 p-8 overflow-y-auto", className)}>
+    <div className={cn("flex h-dvh md:min-h-screen flex-col space-y-8 p-8 overflow-y-auto", className)}>
       <PageBreadcrumb items={items} />
 
       {titleContent}

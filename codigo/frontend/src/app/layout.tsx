@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ReactNode } from "react";
+import { ReactScan } from "@/components/debug/scan";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,6 +18,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "OBR Quiz",
   description: "Sistema de Cadastro de Questões",
+  appleWebApp: {
+    capable: true,
+    title: "OBR Quiz",
+  },  
 };
 
 export default function RootLayout({
@@ -26,8 +31,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
+      {/* TODO: remover para builds */}
+      {/* <ReactScan /> */}
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased w-screen h-screen overflow-hidden`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased w-screen h-screen`}
       >
         {children}
 

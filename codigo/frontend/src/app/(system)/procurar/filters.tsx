@@ -38,7 +38,7 @@ const formSchema = z.object({
 });
 
 // TODO: criar lista de anos, níveis, etapas da OBR com base no banco de dados
-// TODO: criar lista de habilidades da ABNCC, provavelmente melhor usar o DB?
+// TODO: criar lista de habilidades da BNCC, provavelmente melhor usar o DB?
 export const Filters = () => {
   const isMobile = useMediaQuery("(max-width: 425px)");
   const [pressed, setPressed] = useState(false);
@@ -159,7 +159,7 @@ export const Filters = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-bold">
-                        Habilidade da ABNCC
+                        Habilidade da BNCC
                       </FormLabel>
                       <Select
                         onValueChange={field.onChange}
@@ -200,7 +200,7 @@ export const Filters = () => {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="all">Todas os anos</SelectItem>
+                          <SelectItem value="all">Todos os anos</SelectItem>
                           <SelectItem value="2025">2025</SelectItem>
                           <SelectItem value="2024">2024</SelectItem>
                           <SelectItem value="2023">2023</SelectItem>

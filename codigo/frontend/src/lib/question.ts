@@ -1,3 +1,4 @@
+import { lorem } from "./lorem";
 import { copyWith } from "./utils";
 
 export type QuestionBadge = {
@@ -17,7 +18,7 @@ export interface Question {
   id: string;
 
   number: number;
-  asking: string;
+  question: string;
 
   education: QuestionBadge;
   knowledge: QuestionBadge;
@@ -42,7 +43,7 @@ const questions: Question[] = [
   {
     id: 'f8bab5ea-83a8-4e9b-ad56-df23843b9029',
     number: 3,
-    asking: "Lorem ipsum dolor sit amet. Et quidem unde nam fuga harum sed labore voluptas rem repudiandae fugit vel repellat accusantium ea velit dolor. Quo dignissimos voluptas At minus distinctio rem consectetur eaque non excepturi tempore et provident voluptas qui mollitia commodi.",
+    question: lorem.question,
     education: {
       color: "#9A3412", // orange-800
       background: "#FFF0DF",
