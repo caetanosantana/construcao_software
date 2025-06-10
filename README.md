@@ -24,8 +24,9 @@ O repositório está organizado da seguinte forma:
 - **testes/**: Inclui scripts e planos de testes para validação do sistema.
 - **scrum/**: Contém artefatos de gestão do projeto, como backlog do produto e atas de reuniões.
 
+## Acessar Sistema
+O sistema pode ser acessado no seguinte link:
 
-
----
+https://construcao-software.vercel.app/dashboard
 
 Esse README será atualizado conforme o projeto evolui
