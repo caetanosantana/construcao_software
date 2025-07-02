@@ -68,7 +68,6 @@ type DeepPartial<T> = {
 
 export function Steps() {
   const router = useRouter();
-  const params = useSearchParams();
   const [lastStep, setLastStep] = useState(0);
   const canGoBack = lastStep > 0;
   const canGoForward = lastStep < ALL_STEPS.length - 1;
