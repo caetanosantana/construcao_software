@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { TeacherSidebar } from "@/components/sidebar/user";
 import { getUserType } from "@/lib/user";
+import { QuestionsProvider } from "@/context/QuestionContext";
 
 export default function SystemLayout({
   children,
@@ -12,12 +13,16 @@ export default function SystemLayout({
   const sidebar = userType === "teacher" ? <TeacherSidebar /> : null;
 
   return (
-    <div className="flex flex-row w-screen h-screen items-center justify-center">
-      <section className="hidden lg:flex w-1/5 h-screen border-r-[1.2px] border-accent">
-        {sidebar}
-      </section>
+    <QuestionsProvider>
+      <div className="flex flex-row w-screen h-screen items-center justify-center">
+        <section className="hidden lg:flex w-1/5 h-screen border-r-[1.2px] border-accent">
+          {sidebar}
+        </section>
 
-      <main className="flex flex-col w-full lg:w-4/5 h-screen">{children}</main>
-    </div>
+        <main className="flex flex-col w-full lg:w-4/5 h-screen">
+          {children}
+        </main>
+      </div>
+    </QuestionsProvider>
   );
 }

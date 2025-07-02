@@ -181,7 +181,7 @@ export function Step2({ form }: { form: UseFormReturn<AddSchema> }) {
                                 )}
                               />
 
-                              <AlternativeImage
+                              {/* <AlternativeImage
                                 image={form.getValues(
                                   `alternatives.${index}.image`
                                 )}
@@ -198,7 +198,7 @@ export function Step2({ form }: { form: UseFormReturn<AddSchema> }) {
                                     image: undefined,
                                   });
                                 }}
-                              />
+                              /> */}
                             </div>
                           </Card>
                         );
@@ -216,7 +216,7 @@ export function Step2({ form }: { form: UseFormReturn<AddSchema> }) {
                 onClick={() => {
                   append({
                     text: "",
-                    image: undefined,
+                    image: null,
                   });
                 }}
                 type="button"

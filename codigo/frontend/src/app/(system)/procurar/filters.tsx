@@ -25,6 +25,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { AnimatePresence } from "motion/react";
 import { useMediaQuery } from "usehooks-ts";
+import { useQuestions } from "@/context/QuestionContext";
 
 const formSchema = z.object({
   education: z.enum(["all", "ef", "em"]),
@@ -42,6 +43,7 @@ const formSchema = z.object({
 export const Filters = () => {
   const isMobile = useMediaQuery("(max-width: 425px)");
   const [pressed, setPressed] = useState(false);
+  const { setQuestionsFilter } = useQuestions();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -58,7 +60,16 @@ export const Filters = () => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    setQuestionsFilter({
+      education: values.education,
+      knowledge: values.knowledge,
+      hability: values.hability,
+      obr: {
+        years: values.obr.years,
+        level: values.obr.level,
+        stage: values.obr.stage,
+      },
+    });
   }
 
   return (

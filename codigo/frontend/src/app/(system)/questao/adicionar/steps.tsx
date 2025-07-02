@@ -11,6 +11,10 @@ import { Step1 } from "./step1";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Step2 } from "./step2";
+import { useRouter, useSearchParams } from "next/navigation";
+import { addQuestionAction } from "./actions";
+import { toast } from "sonner";
+import { useTransition } from "react";
 
 const ALL_STEPS = ["1", "2"];
 
@@ -24,7 +28,12 @@ const SEPARATOR_ANIMATIONS: Variants = {
 };
 
 const CircleCheck = () => (
-  <motion.svg xmlns="http://www.w3.org/2000/svg" color="white" width={24} height={24}>
+  <motion.svg
+    xmlns="http://www.w3.org/2000/svg"
+    color="white"
+    width={24}
+    height={24}
+  >
     <motion.path
       d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" // Circle
       fill="none"
@@ -53,31 +62,42 @@ const CircleCheck = () => (
   </motion.svg>
 );
 
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+};
+
 export function Steps() {
+  const router = useRouter();
+  const params = useSearchParams();
   const [lastStep, setLastStep] = useState(0);
   const canGoBack = lastStep > 0;
   const canGoForward = lastStep < ALL_STEPS.length - 1;
 
+
   const form = useForm<AddSchema>({
     resolver: zodResolver(AddSchema),
     defaultValues: {
-      obr: {
-        number: "",
-      },
+      obr: null,
       type: "single",
+      knowledge: "",
       question: {
+        question: "",
         images: [],
       },
       answer: "",
     },
   });
 
-  const formIsCompleted = form.watch(["question.question", "alternatives"]).every((value) => {
-    if (Array.isArray(value)) {
-      return value.every((item) => item.text || item.image);
-    }
-    return value !== "" && value !== undefined;
-  });
+  const formIsCompleted = form
+    .watch(["question.question", "alternatives"])
+    .every((value) => {
+      if (Array.isArray(value)) {
+        return value.every((item) => item.text || item.image);
+      }
+      return value !== "" && value !== undefined;
+    });
+
+  const [isPending, startTransition] = useTransition();
 
   const handleChangeStep = (step: number) => {
     // TODO: aqui vai ter que validar o estado do formulário para saber se pode ir para o próximo passo
@@ -85,8 +105,16 @@ export function Steps() {
     setLastStep(step);
   };
 
-  function onSubmit(values: AddSchema) {
-    console.log(values);
+  async function handleSubmit(values: AddSchema) {
+    startTransition(async () => {
+      const result = await addQuestionAction(values);
+      if (result.success) {
+        toast.success("Questão cadastrada com sucesso!");
+        router.push("/procurar");
+      } else {
+        toast.error(result.error || "Erro ao cadastrar questão");
+      }
+    });
   }
 
   return (
@@ -135,7 +163,11 @@ export function Steps() {
       </ol>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full p-4" name="add-question-form">
+        <form
+          onSubmit={form.handleSubmit(handleSubmit)}
+          className="w-full p-4"
+          name="add-question-form"
+        >
           {/* FIXME: implementar de uma forma melhor, criar um hook para gerenciar os estados e os passos */}
           {lastStep === 0 && <Step1 form={form} />}
           {lastStep === 1 && <Step2 form={form} />}
@@ -164,7 +196,13 @@ export function Steps() {
             type="submit"
             form="add-question-form"
             variant="success"
-            disabled={!formIsCompleted}
+            disabled={!formIsCompleted || isPending}
+            onClick={(ev) => {
+              ev.preventDefault();
+              if (formIsCompleted && !isPending) {
+                handleSubmit(form.getValues());
+              }
+            }}
           >
             Cadastrar
           </Button>

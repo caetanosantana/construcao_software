@@ -1,6 +1,6 @@
 "use client";
 
-import { type Alternative, Question, QuestionBadge } from "@/lib/question";
+import { type Alternative, Question } from "@/lib/question";
 import {
   Card,
   CardContent,
@@ -13,20 +13,15 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Label } from "../ui/label";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { Plus } from "lucide-react";
-import { Button } from "../ui/button";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { checkIfAlternativeCorrect } from "./check-question";
+import { getQuestionBadgeStyle } from "@/lib/styles";
 
 interface Props {
   question: Question;
+  number: number;
 }
-
-const getQuestionBadgeStyle = (badge: QuestionBadge) => {
-  return {
-    backgroundColor: badge.background,
-    borderColor: badge.border,
-    color: badge.color,
-  };
-};
 
 // FIXME: mover para arquivo separado
 // FIXME: adicionar tipos diferentes de alternativas, como imagem, etc...
@@ -36,24 +31,41 @@ const Alternative = ({
   id,
   selected,
   value,
-}: Alternative & { selected: boolean; value: string }) => {
+  isCorrect,
+  isLoading = false,
+  disabled = false,
+}: Alternative & {
+  selected: boolean;
+  value: string;
+  isCorrect?: boolean;
+  isLoading: boolean;
+  disabled: boolean;
+}) => {
   return (
     <div className="flex items-center space-x-3 py-2">
       <div
         className={cn(
           "flex items-center justify-center w-8 h-8 rounded-full select-none cursor-pointer border border-gray-300 text-black",
-
-          { "bg-green-100 text-green-700 border-green-400": selected }
+          {
+            "bg-gray-300 cursor-not-allowed": disabled,
+            "bg-blue-200 text-blue-700 animate-spin cursor-not-allowed":
+              selected && isLoading,
+            "bg-red-100 text-red-700 border-red-400": selected && isCorrect,
+            "bg-green-100 text-green-700 border-green-400": isCorrect,
+          }
         )}
       >
-        {value}
+        {isLoading ? <Loader2 /> : value}
       </div>
       <Label
         htmlFor={id}
         className={cn(
-          "text-base font-normal cursor-pointer",
-          selected && "text-green-700"
+          "text-base font-normal cursor-pointer disabled:cursor-not-allowed disabled:text-gray-500",
+          { "text-blue-700": selected && isLoading },
+          { "text-red-700": selected && isCorrect },
+          { "text-green-700": isCorrect }
         )}
+        aria-disabled={disabled}
       >
         {answer}
       </Label>
@@ -61,46 +73,91 @@ const Alternative = ({
   );
 };
 
-export const QuestionCard = ({ question }: Props) => {
+export const QuestionCard = ({ question, number }: Props) => {
+  const [isChecked, setIsChecked] = useState(false);
   const [selectedValue, setSelectedValue] = useState<string>();
+  const [status, setStatus] = useState<
+    Record<
+      string,
+      {
+        isCorrect: boolean;
+        isLoading: boolean;
+      }
+    >
+  >({});
+
+  const handleCheckAlternative = async (value: string) => {
+    const alternative = question.alternatives.find((alt) => alt.id === value);
+
+    if (!alternative) {
+      return;
+    }
+    setSelectedValue(alternative.id);
+    setStatus((prev) => ({
+      ...prev,
+      [alternative.id]: { isLoading: true, isCorrect: false },
+    }));
+
+    const isCorrect = await checkIfAlternativeCorrect(
+      question.id,
+      alternative.id
+    );
+
+    setStatus((prev) => ({
+      ...prev,
+      [alternative.id]: { isLoading: false, isCorrect },
+    }));
+
+    if (isCorrect) {
+      setIsChecked(true);
+      toast.success("Alternativa correta!");
+    } else {
+      toast.error("Alternativa incorreta.");
+    }
+  };
 
   return (
     <Card className="w-full border-t-blue-400 border-t-4">
-      <CardHeader className={cn("gap-4 p-0 flex flex-col", !question.obr && "grid-rows-none ")}>
+      <CardHeader
+        className={cn(
+          "gap-4 p-0 flex flex-col",
+          !question.obr && "grid-rows-none "
+        )}
+      >
         <CardTitle className="flex justify-between items-center w-full px-2 md:px-3 lg:px-6">
           <div className="flex flex-wrap gap-2">
             <Badge variant="outline" className="rounded-full text-sm">
-              <strong>#{question.number}</strong>
+              <strong>#{number}</strong>
             </Badge>
             <Badge
               variant="outline"
               className="rounded-full"
-              style={getQuestionBadgeStyle(question.education)}
+              style={getQuestionBadgeStyle("education")}
             >
-              {question.education.label}
+              {question.education}
             </Badge>
             <Badge
               variant="outline"
               className="rounded-full"
-              style={getQuestionBadgeStyle(question.knowledge)}
+              style={getQuestionBadgeStyle("knowledge")}
             >
-              {question.knowledge.label}
+              {question.knowledge}
             </Badge>
             <Badge
               variant="outline"
               className="rounded-full"
-              style={getQuestionBadgeStyle(question.hability)}
+              style={getQuestionBadgeStyle("hability")}
             >
-              {question.hability.label}
+              {question.hability}
             </Badge>
           </div>
 
           <div className="flex gap-2">
-            {question.can.add && (
+            {/* {question.can.add && (
               <Button variant="ghost" size="icon-lg">
                 <Plus />
               </Button>
-            )}
+            )} */}
           </div>
         </CardTitle>
 
@@ -132,16 +189,20 @@ export const QuestionCard = ({ question }: Props) => {
           <RadioGroup
             className="flex flex-col"
             value={selectedValue}
-            onValueChange={setSelectedValue}
+            onValueChange={handleCheckAlternative}
+            disabled={isChecked}
           >
             {question.alternatives.map((alternative, idx) => (
               <div className="flex items-center space-x-3" key={alternative.id}>
-                <div onClick={() => setSelectedValue(alternative.id)}>
+                <div onClick={() => handleCheckAlternative(alternative.id)}>
                   <Alternative
                     {...alternative}
                     selected={selectedValue === alternative.id}
                     // FIXME: Esse valor precisa pegar de uma maneira melhor ;(
                     value={String.fromCharCode("A".charCodeAt(0) + idx)}
+                    isLoading={status[alternative.id]?.isLoading || false}
+                    isCorrect={status[alternative.id]?.isCorrect}
+                    disabled= {isChecked || status[alternative.id]?.isLoading}
                   />
                   <RadioGroupItem
                     value={alternative.id}

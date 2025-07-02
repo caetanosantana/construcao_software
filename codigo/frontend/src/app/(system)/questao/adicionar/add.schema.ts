@@ -14,8 +14,8 @@ export const AddSchema = z.object({
     years: z.string(),
     level: z.enum(["0", "1", "2", "3", "4", "5"]),
     stage: z.enum(["1", "2"]),
-    number: z.union([z.literal(""), z.number()]),
-  }),
+    number: z.string(),
+  }).nullable(),
 
   question: z.object({
     question: z.string().min(10, "Campo obrigatório"),
@@ -24,7 +24,7 @@ export const AddSchema = z.object({
   type: z.enum(["multiple", "true-false", "single"]),
   alternatives: z.object({
     text: z.string().optional(),
-    image: z.file().optional(),
+    image: z.file().optional().nullable(),
     // FIXME: adicionar validação para o campo se nenhum dos dois campos estiver preenchido
   }).array(),
 

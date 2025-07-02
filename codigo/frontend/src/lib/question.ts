@@ -1,99 +1,263 @@
-import { lorem } from "./lorem";
-import { copyWith } from "./utils";
+import { auth } from "@/auth";
+import { db } from "@/db";
+import {
+  questions as questionsTable,
+  alternatives as alternativesTable,
+  InsertQuestion,
+  InsertAlternative,
+  users,
+} from "@/db/schema";
+import { eq, getTableColumns } from "drizzle-orm";
+import { v4 as uuidv4 } from "uuid";
 
 export type QuestionBadge = {
   color: string;
   background: string;
   border: string;
   label: string;
-}
+};
 
 export type Alternative = {
   id: string;
   answer: string;
-  type: "image" | "string"; // FIXME: adicionar outras tipagens
-}
+  type: "image" | "string";
+  image?: Buffer | string | null; // For images, can be null if not an image
+  isCorrect: boolean;
+};
 
 export interface Question {
   id: string;
-
   number: number;
   question: string;
-
-  education: QuestionBadge;
-  knowledge: QuestionBadge;
-  hability: QuestionBadge;
-
+  education: string;
+  knowledge: string;
+  hability: string;
   obr?: {
-    year: string;
-    level: string;
-    stage: string;
-    question_number: number;
-  }
-
-  can: {
+    year?: string;
+    level?: string;
+    stage?: string;
+    question_number?: string;
+  };
+  // this is inserted at fly when the user can do something with the question
+  // e.g. can add alternatives, delete the question, etc.
+  can?: {
     add?: boolean;
     delete?: boolean;
-  }
-
-  alternatives: Alternative[]
+  };
+  alternatives: Alternative[];
+  userId: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
 }
 
-const questions: Question[] = [
-  {
-    id: 'f8bab5ea-83a8-4e9b-ad56-df23843b9029',
-    number: 3,
-    question: lorem.question,
-    education: {
-      color: "#9A3412", // orange-800
-      background: "#FFF0DF",
-      border: "#FED7AA", // orange-200
-      label: "Escolaridade da Questão"
-    },
-    knowledge: {
-      color: "#155E9D",
-      background: "#CFFAFE",
-      border: "#A5F3FC",
-      label: "Área do Conhecimento"
-    },
-    hability: {
-      color: "#6C27AB",
-      background: "#F3E8FF",
-      border: "#E9D5FF",
-      label: "Habilidade: N habilidade"
-    },
-    obr: {
-      year: "ano da questão",
-      level: "nível da questão",
-      stage: "etapa da questão",
-      question_number: 1,
-    },
-    can: {
-      add: true,
-    },
+export type QuestionWithoutCorrect = Omit<Question, "alternatives[].isCorrect">;
 
-    alternatives: [
-      { id: "5b02bf34-15d3-4d16-8dfb-0e10b15a2985", answer: "Alternativa A", type: "string" },
-      { id: "6173d827-46cd-47cd-ade5-3dbf21ab35ea", answer: "Alternativa B", type: "string" },
-      { id: "0dca1e46-1e2a-4514-a1f2-b886d9ba4789", answer: "Alternativa C", type: "string" },
-      { id: "3eeef192-dce8-41ce-a9ad-42ad696038d6", answer: "Alternativa D", type: "string" },
-    ]
+export type QuestionCurated = Question & {
+  author: string; // Author's name
+};
+
+const DefaulKnowledgeAreaID = 1; // Default knowledge area ID, change as needed
+
+export async function getQuestions() {
+  const questions = await db.select().from(questionsTable).where(
+    eq(questionsTable.status, "approved")
+  );
+  const alternatives = await db
+    .select({
+      id: alternativesTable.id,
+      answer: alternativesTable.answer,
+      type: alternativesTable.type,
+      questionId: alternativesTable.questionId,
+    })
+    .from(alternativesTable);
+
+  return questions.map((q) => ({
+    ...q,
+    alternatives: alternatives
+      .filter((a) => a.questionId === q.id)
+      .map(({ id, answer, type }) => ({ id, answer, type })),
+  }));
+}
+
+// Buscar questões com informações de curadoria
+export async function getQuestionsCurated() {
+  const questions = await db.select({
+    ...getTableColumns(questionsTable),
+    author: users.name,
+  }).from(questionsTable).leftJoin(
+    users,
+    eq(questionsTable.userId, users.id) 
+  );
+  const alternatives = await db
+    .select()
+    .from(alternativesTable);
+
+  return questions.map((q) => ({
+    ...q,
+    alternatives: alternatives
+      .filter((a) => a.questionId === q.id),
+  })) as QuestionCurated[];
+}
+
+export async function addQuestion(
+  question: Omit<Question, "id" | "created_at" | "updated_at">
+) {
+  const q = await db.transaction(async (tx) => {
+    const mappedQuestion: InsertQuestion = {
+      id: uuidv4(),
+      number: question.number,
+      question: question.question,
+      education: question.education,
+      knowledge: question.knowledge,
+      hability: question.hability,
+      obrYear: question.obr?.year || undefined,
+      obrLevel: question.obr?.level || undefined,
+      obrStage: question.obr?.stage || undefined,
+      obrQuestionNumber: question.obr?.question_number || undefined,
+      userId: question.userId,
+      status: "pending_approval",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      keyword: undefined,
+      difficulty: undefined,
+      knowledgeAreaId: DefaulKnowledgeAreaID,
+      editionId: undefined,
+      deleted_at: undefined,
+    };
+
+    const result = await tx
+      .insert(questionsTable)
+      .values(mappedQuestion)
+      .returning({ id: questionsTable.id });
+
+    const q = result[0];
+
+    for (const alt of question.alternatives) {
+      await tx.insert(alternativesTable).values({
+        id: uuidv4(),
+        answer: alt.answer,
+        type: alt.type,
+        isCorrect: alt.isCorrect ?? false, // usa o valor da questão, ou false
+        questionId: q.id,
+        data: alt.image ?? null, // usa o campo correto do schema
+      } as InsertAlternative);
+    }
+
+    return q;
+  });
+
+  return { success: true, id: q.id };
+}
+
+// Atualizar uma questão
+export async function updateQuestion(id: string, data: Partial<Question>) {
+  try {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    const user = session.user;
+
+    const existingQuestion = await db
+      .select()
+      .from(questionsTable)
+      .where(eq(questionsTable.id, id))
+      .limit(1)
+      .then((rows) => rows[0]);
+
+    if (!existingQuestion) {
+      return { success: false, error: "Question not found" };
+    }
+
+    // FIXME: adicionar edição como admin
+    if (existingQuestion.userId !== user.id) {
+      return { success: false, error: "Unauthorized to update this question" };
+    }
+
+    const mappedQuestion: Partial<InsertQuestion> = {
+      // number: data.number || existingQuestion.number,
+      question: data.question || existingQuestion.question,
+      education: data.education || existingQuestion.education,
+      knowledge: data.knowledge || existingQuestion.knowledge,
+      hability: data.hability || existingQuestion.hability,
+      obrYear: data.obr?.year || existingQuestion.obrYear,
+      obrLevel: data.obr?.level || existingQuestion.obrLevel,
+      obrStage: data.obr?.stage || existingQuestion.obrStage,
+      obrQuestionNumber:
+        data.obr?.question_number || existingQuestion.obrQuestionNumber,
+      status: "pending_approval",
+      userId: existingQuestion.userId,
+      created_at: data.created_at || new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    await db
+      .update(questionsTable)
+      .set(mappedQuestion)
+      .where(eq(questionsTable.id, id));
+
+    return { success: true, id };
+  } catch (error) {
+    console.error("Error updating question:", error);
+    return { success: false, error: "Failed to update question" };
   }
-]
+}
 
-questions.push(copyWith(questions[0], {
-  id: '955ae2b9-026b-41be-b25a-1f4112ac576c',
-  number: 1,
-  education: copyWith(questions[0].education, { color: "#155E9D", background: "#CFFAFE", border: "#A5F3FC", }),
-  knowledge: copyWith(questions[0].knowledge, { color: "#b91c1c", background: "#fecaca", border: "#f87171", }),
-  hability: copyWith(questions[0].hability, { color: "#166534", background: "#bbf7d0", border: "#22c55e", }),
-  can: {
-    add: true,
-    delete: true
-  },
-  obr: undefined,
-}))
+export async function getQuestionToCheck(id: string) {
+  try {
+    const questions = await db.select().from(questionsTable).where(eq(questionsTable.id, id));
+    const alternatives = await db
+      .select()
+      .from(alternativesTable)
+      .where(eq(alternativesTable.questionId, id));
 
-export const getQuestions = () => {
-  return questions;
+    console.log("Checking question:", questions, alternatives);
+
+    return {
+      success: true,
+      question: questions.map((q) => ({
+        ...q,
+        alternatives: alternatives.map(({ id, isCorrect }) => ({
+          id,
+          isCorrect,
+        })),
+      })).at(0),
+    };
+  } catch (error) {
+    console.log("Error checking question:", error);
+    return { success: false, error: "Failed to check question" };
+  }
+}
+
+// Aprovar uma questão
+export async function approveQuestion(id: string) {
+  try {
+    await db
+      .update(questionsTable)
+      .set({ status: "approved" })
+      .where(eq(questionsTable.id, id));
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error approving question:", error);
+    return { success: false, error: "Failed to approve question" };
+  }
+}
+
+// Reprovar uma questão
+export async function rejectQuestion(id: string) {
+  try {
+    await db
+      .update(questionsTable)
+      .set({ status: "rejected" })
+      .where(eq(questionsTable.id, id));
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error rejecting question:", error);
+    return { success: false, error: "Failed to reject question" };
+  }
 }
